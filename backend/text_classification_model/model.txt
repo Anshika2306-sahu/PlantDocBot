@@ -1,0 +1,2 @@
+The link to download model.safetensors is as follows: 
+https://drive.google.com/file/d/1y9xI9NLqcMWuYZtFNfOShxf2pm_FFqCj/view?usp=sharing
