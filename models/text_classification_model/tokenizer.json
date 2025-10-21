@@ -1,0 +1,5 @@
+{
+    "tokenizer_type": "BertTokenizer",
+    "vocab_size": 30522,
+    "model_max_length": 128
+}
