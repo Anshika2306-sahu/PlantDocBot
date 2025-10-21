@@ -1,0 +1,30 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment folders
+venv/
+.env/
+env/
+.venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# PyTorch saved models (optional, if you want to exclude large models)
+*.pt
+*.pth
+*.safetensors
+
+# VSCode settings
+.vscode/
+
+# Mac OS metadata
+.DS_Store
