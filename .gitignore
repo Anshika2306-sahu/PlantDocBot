@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+venv/
+env/
+ENV/
+.DS_Store/
+*.pth
+*.bin
+*.pt
+*.ckpt
+best_plant_text_classifier/
+text_classification_model/
+logs/
+*.log
+.vscode/
+.idea/
