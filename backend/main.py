@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 import io
 import torch
 import torch.nn as nn
+from torch.nn import functional as F
 from torchvision import transforms, models
 from PIL import Image
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
@@ -83,16 +84,20 @@ async def predict_image(file: UploadFile = File(...)):
 
 @app.post("/predict/text")
 async def predict_text(text: str = Form(...)):
-    """Accept text input and return predicted class label."""
+    """Accept text input and return predicted class label and probability."""
     if not isinstance(text, str) or len(text.strip()) == 0:
         raise HTTPException(status_code=400, detail="Text input required")
     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=128)
     with torch.no_grad():
         logits = text_model(**inputs).logits
-        pred_idx = torch.argmax(logits, dim=1).item()
+        # Softmax to get probabilities for all classes
+        probs = F.softmax(logits, dim=1)[0]
+        pred_idx = torch.argmax(probs, dim=0).item()
+        pred_prob = float(probs[pred_idx])
 
     pred_label = text_class_labels[pred_idx] if pred_idx < len(text_class_labels) else str(pred_idx)
     return JSONResponse({
         "prediction": pred_label,
-        "class_index": pred_idx
+        "class_index": pred_idx,
+        "probability": round(pred_prob, 4)  # 0.97 means 97% confidence
     })
