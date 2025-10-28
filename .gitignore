@@ -1,30 +1,27 @@
-# Python cache files
-__pycache__/
-*.py[cod]
-*$py.class
+# ===== FRONTEND (React) =====
 
-# Virtual environment folders
-venv/
-.env/
-env/
-.venv/
+# dependencies
+node_modules/
+.pnp/
+.pnp.js
 
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# Distribution / packaging
+# production
 build/
-dist/
-*.egg-info/
-.eggs/
 
-# PyTorch saved models (optional, if you want to exclude large models)
-*.pt
-*.pth
-*.safetensors
+# testing
+coverage/
 
-# VSCode settings
-.vscode/
-
-# Mac OS metadata
+# misc
 .DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===== COMMON (Optional, safe to keep) =====
+.vscode/
