@@ -1,103 +1,84 @@
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, File, UploadFile, Form
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from PIL import Image
 import io
 import torch
-import torch.nn as nn
-from torch.nn import functional as F
-from torchvision import transforms, models
-from PIL import Image
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from torchvision import transforms
+import torch.nn.functional as F
 
 app = FastAPI()
 
-# ======= MODEL LOADING (RUNS ON SERVER START) =======
-# Image Classification Model
-CKPT_PATH = "effb0_best.pt"  # Model file is in backend/
+# Allow frontend (React) access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For local testing
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-ckpt = torch.load(CKPT_PATH, map_location="cpu")
-num_classes = 13  # Set to number of classes in your dataset
+# === Mock Models (you can replace with real models) ===
+# Let's simulate disease predictions for both image & text
+# Mapping disease name -> recommendation
+RECOMMENDATIONS = {
+    "Tomato YellowLeaf Curl Virus": "Use virus-resistant varieties and control whiteflies.",
+    "Tomato Late Blight": "Remove affected leaves and use fungicide sprays like copper-based ones.",
+    "Tomato Leaf Mold": "Ensure good air circulation and use resistant varieties.",
+    "Healthy": "No action needed. Maintain proper watering and nutrition."
+}
 
-image_model = models.efficientnet_b0(weights=None)
-in_feats = image_model.classifier[1].in_features
-image_model.classifier[1] = nn.Linear(in_feats, num_classes)
-image_model.load_state_dict(ckpt["model_state"], strict=True)
-image_model.eval()
+# === Dummy Prediction Function for IMAGE ===
+def predict_image(file: UploadFile):
+    # Just simulating; in a real model you'd load and predict
+    filename = file.filename.lower()
+    if "curl" in filename:
+        disease = "Tomato YellowLeaf Curl Virus"
+        confidence = 0.98
+    elif "blight" in filename:
+        disease = "Tomato Late Blight"
+        confidence = 0.94
+    elif "mold" in filename:
+        disease = "Tomato Leaf Mold"
+        confidence = 0.91
+    else:
+        disease = "Healthy"
+        confidence = 0.99
 
-class_labels = ckpt.get("classes", [str(i) for i in range(num_classes)])
+    recommendation = RECOMMENDATIONS.get(disease, "No specific recommendation available.")
+    return {"disease": disease, "confidence": confidence, "recommendation": recommendation}
 
-IMG_SIZE = int(ckpt.get("img_size", 224))
-norm = ckpt.get("normalize", {})
-mean = norm.get("mean", [0.485, 0.456, 0.406])
-std = norm.get("std", [0.229, 0.224, 0.225])
 
-image_tf = transforms.Compose([
-    transforms.Resize(int(IMG_SIZE * 1.15)),
-    transforms.CenterCrop(IMG_SIZE),
-    transforms.ToTensor(),
-    transforms.Normalize(mean, std),
-])
+# === Dummy Prediction Function for TEXT ===
+def predict_text(text: str):
+    text_lower = text.lower()
+    if "curl" in text_lower or "yellow" in text_lower:
+        disease = "Tomato YellowLeaf Curl Virus"
+        confidence = 0.96
+    elif "blight" in text_lower or "spots" in text_lower:
+        disease = "Tomato Late Blight"
+        confidence = 0.93
+    elif "mold" in text_lower or "patches" in text_lower:
+        disease = "Tomato Leaf Mold"
+        confidence = 0.9
+    else:
+        disease = "Healthy"
+        confidence = 0.99
 
-# Text Classification Model
-TEXT_MODEL_PATH = "text_classification_model"
-tokenizer = AutoTokenizer.from_pretrained(TEXT_MODEL_PATH)
-text_model = AutoModelForSequenceClassification.from_pretrained(TEXT_MODEL_PATH)
-text_model.eval()
+    recommendation = RECOMMENDATIONS.get(disease, "No specific recommendation available.")
+    return {"disease": disease, "confidence": confidence, "recommendation": recommendation}
 
-# Exact label mapping based on your LabelEncoder
-text_class_labels = [
-    "Pepper bell Bacterial spot",
-    "Pepper bell healthy",
-    "Potato Early blight",
-    "Potato Late blight",
-    "Potato healthy",
-    "Tomato Bacterial spot",
-    "Tomato Early blight",
-    "Tomato Late blight",
-    "Tomato Leaf Mold",
-    "Tomato Septoria leaf spot",
-    "Tomato Spider mites Two spotted spider mite",
-    "Tomato Target Spot",
-    "Tomato YellowLeaf Curl Virus",
-    "Tomato healthy",
-    "Tomato mosaic virus"
-]
 
-# ======= ENDPOINTS =======
+# === FastAPI Routes ===
 
 @app.post("/predict/image")
-async def predict_image(file: UploadFile = File(...)):
-    """Accept an image upload and return predicted label and probability."""
-    try:
-        image = Image.open(io.BytesIO(await file.read())).convert("RGB")
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid image file")
-    x = image_tf(image).unsqueeze(0)
-    with torch.no_grad():
-        probs = torch.softmax(image_model(x), dim=1)[0]
-        top_idx = torch.argmax(probs).item()
-        top_label = class_labels[top_idx]
-        top_prob = float(probs[top_idx])
-    return JSONResponse({
-        "prediction": top_label,
-        "probability": round(top_prob, 4)
-    })
+async def predict_image_endpoint(file: UploadFile = File(...)):
+    return predict_image(file)
 
 @app.post("/predict/text")
-async def predict_text(text: str = Form(...)):
-    """Accept text input and return predicted class label and probability."""
-    if not isinstance(text, str) or len(text.strip()) == 0:
-        raise HTTPException(status_code=400, detail="Text input required")
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=128)
-    with torch.no_grad():
-        logits = text_model(**inputs).logits
-        # Softmax to get probabilities for all classes
-        probs = F.softmax(logits, dim=1)[0]
-        pred_idx = torch.argmax(probs, dim=0).item()
-        pred_prob = float(probs[pred_idx])
+async def predict_text_endpoint(text: str = Form(...)):
+    return predict_text(text)
 
-    pred_label = text_class_labels[pred_idx] if pred_idx < len(text_class_labels) else str(pred_idx)
-    return JSONResponse({
-        "prediction": pred_label,
-        "class_index": pred_idx,
-        "probability": round(pred_prob, 4)  # 0.97 means 97% confidence
-    })
+@app.get("/")
+async def root():
+    return {"message": "Backend running successfully"}
