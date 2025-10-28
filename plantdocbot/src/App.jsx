@@ -58,18 +58,15 @@ function App() {
     }
   };
 
-  // Helper function to parse confidence value
+
   const getConfidenceWidth = (confidence) => {
     if (!confidence) return "0%";
-    // If it's already a percentage string like "95%", use it directly
     if (typeof confidence === "string" && confidence.includes("%")) {
       return confidence;
     }
-    // If it's a decimal like 0.95, convert to percentage
     if (typeof confidence === "number" && confidence <= 1) {
       return `${confidence * 100}%`;
     }
-    // If it's a number like 95, add % sign
     if (typeof confidence === "number") {
       return `${confidence}%`;
     }
@@ -104,13 +101,9 @@ function App() {
           <h1 className="text-5xl md:text-6xl font-medium text-neutral-900 tracking-tight mb-6">
             AI-powered plant<br />disease detection
           </h1>
-          <p className="text-xl text-neutral-600 max-w-2xl mx-auto mb-4">
+          <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
             Diagnose plant diseases instantly with computer vision. Upload an image or describe symptoms.
           </p>
-          <div className="flex items-center justify-center gap-2 text-sm text-neutral-500">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-            <span>System operational</span>
-          </div>
         </div>
       </section>
 
@@ -276,47 +269,6 @@ function App() {
               )}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-24 px-6 border-t border-neutral-200">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-12">
-            <div>
-              <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-5 h-5 text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-base font-medium text-neutral-900 mb-2">Instant detection</h3>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Get results in seconds with our advanced ML models trained on thousands of plant diseases.
-              </p>
-            </div>
-            <div>
-              <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-5 h-5 text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-base font-medium text-neutral-900 mb-2">High accuracy</h3>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Proven accuracy across multiple crop types and disease classifications.
-              </p>
-            </div>
-            <div>
-              <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-5 h-5 text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                </svg>
-              </div>
-              <h3 className="text-base font-medium text-neutral-900 mb-2">Expert recommendations</h3>
-              <p className="text-sm text-neutral-600 leading-relaxed">
-                Receive actionable treatment plans based on the detected disease.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
