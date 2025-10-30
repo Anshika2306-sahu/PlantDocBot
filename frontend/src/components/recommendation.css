@@ -1,0 +1,64 @@
+/* Recommendation Card */
+.rec-card{
+  margin-top: 16px;
+  border: 1px solid rgba(16,185,129,.25);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  padding: 16px 18px;
+}
+
+.rec-head{
+  margin-bottom: 8px;
+}
+
+.rec-title{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rec-title-text{
+  font-size: 12px;
+  letter-spacing: .08em;
+  color: #065f46;
+  font-weight: 700;
+}
+
+.rec-sub{
+  margin-top: 4px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.rec-list{
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: #1f2937;
+  line-height: 1.5;
+}
+
+.rec-badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: #0b3;
+  border: 1px solid #0b3;
+  background: #ecfdf5;
+}
+.rec-medium{
+  color: #b45309;
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+.rec-high{
+  color: #b91c1c;
+  border-color: #ef4444;
+  background: #fef2f2;
+}
