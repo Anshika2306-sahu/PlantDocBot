@@ -1,0 +1,179 @@
+{
+  "Tomato___Early_blight": {
+    "disease_name": "Tomato Early Blight",
+    "severity": "Moderate",
+    "description": "Fungal disease caused by Alternaria solani, creating dark brown spots with concentric rings on lower leaves. Can reduce yield significantly if left untreated.",
+    "treatment": [
+      "Remove infected lower leaves immediately and dispose properly",
+      "Apply fungicides containing chlorothalonil, mancozeb, or copper",
+      "Improve air circulation by pruning and spacing plants",
+      "Apply organic mulch to prevent soil splash onto leaves",
+      "Water at the base of plants in the morning"
+    ],
+    "prevention": [
+      "Rotate crops - don't plant tomatoes in same spot for 3-4 years",
+      "Use disease-resistant varieties when available",
+      "Stake or cage plants for better air flow",
+      "Remove and destroy old plant debris at end of season",
+      "Avoid overhead watering",
+      "Apply preventive fungicide early in season",
+      "Maintain proper plant nutrition for strong immunity"
+    ],
+    "organic_solutions": [
+      "Baking soda spray: 1 tbsp baking soda + 1 tsp dish soap per gallon water",
+      "Neem oil application weekly during humid weather",
+      "Compost tea foliar spray for beneficial microbes",
+      "Copper fungicide (OMRI approved for organic gardening)",
+      "Milk spray: 1 part milk to 9 parts water",
+      "Apply sulfur-based organic fungicide"
+    ],
+    "care_instructions": [
+      "Monitor plants daily for new symptoms on lower leaves",
+      "Water deeply 1-2 inches per week, adjust based on rainfall",
+      "Apply balanced fertilizer (5-10-10) every 2-3 weeks",
+      "Mulch with 2-3 inches of organic material",
+      "Remove weeds that can harbor disease"
+    ]
+  },
+  "Tomato___Late_blight": {
+    "disease_name": "Tomato Late Blight",
+    "severity": "Very High",
+    "description": "Devastating fungal disease caused by Phytophthora infestans. The same pathogen that caused the Irish Potato Famine. Can destroy entire crops within days in humid conditions.",
+    "treatment": [
+      "Act immediately - this disease spreads extremely fast",
+      "Remove and destroy all infected plants (do NOT compost)",
+      "Apply fungicides containing chlorothalonil or mancozeb every 5-7 days",
+      "Isolate affected area from healthy plants",
+      "Monitor all nearby tomato and potato plants closely",
+      "In severe cases, remove all plants in affected area"
+    ],
+    "prevention": [
+      "Plant resistant varieties (check your region's recommendations)",
+      "Ensure excellent air circulation between plants",
+      "Never work with plants when wet",
+      "Apply preventive fungicides before disease appears",
+      "Remove volunteer tomato and potato plants",
+      "Monitor weather forecasts - late blight thrives in cool, wet conditions",
+      "Space plants wider than usual (3-4 feet apart)"
+    ],
+    "organic_solutions": [
+      "Copper-based fungicides applied preventively",
+      "Remove infected material immediately",
+      "Bacillus subtilis biological fungicide",
+      "Unfortunately, organic controls are limited - focus on prevention",
+      "Consider growing in hoop houses or greenhouses for better control"
+    ],
+    "care_instructions": [
+      "⚠️ URGENT: Check plants twice daily during humid weather",
+      "Remove any suspicious leaves immediately",
+      "Water only in morning to allow foliage to dry",
+      "Consider removing plants if disease is widespread",
+      "Alert neighboring gardeners if late blight is confirmed"
+    ]
+  },
+  "Tomato___Bacterial_spot": {
+    "disease_name": "Tomato Bacterial Spot",
+    "severity": "Moderate to High",
+    "description": "Bacterial disease caused by Xanthomonas species, creating small dark spots with yellow halos on leaves and fruit. Spreads rapidly in warm, wet conditions.",
+    "treatment": [
+      "Remove and destroy severely infected plants",
+      "Apply copper-based bactericides at first sign",
+      "Reduce overhead watering immediately",
+      "Thin plants to improve air circulation",
+      "Disinfect tools between plants with 10% bleach solution"
+    ],
+    "prevention": [
+      "Use certified disease-free seeds and transplants",
+      "Practice 3-4 year crop rotation",
+      "Avoid working with plants when wet",
+      "Space plants adequately (24-36 inches)",
+      "Use drip irrigation instead of sprinklers",
+      "Remove plant debris at end of season",
+      "Choose resistant varieties for your area"
+    ],
+    "organic_solutions": [
+      "Copper soap spray applications",
+      "Bacillus subtilis or Bacillus amyloliquefaciens products",
+      "Remove infected leaves promptly",
+      "Improve drainage and air circulation",
+      "Acibenzolar-S-methyl (activates plant immune system)"
+    ],
+    "care_instructions": [
+      "Water at soil level only, never wet foliage",
+      "Monitor plants during warm, humid periods",
+      "Maintain plant vigor with proper nutrition",
+      "Sanitize tools after each use",
+      "Avoid handling plants when wet from dew or rain"
+    ]
+  },
+  "Apple___Apple_scab": {
+    "disease_name": "Apple Scab",
+    "severity": "Moderate to High",
+    "description": "Fungal disease caused by Venturia inaequalis, creating olive-green to brown lesions on leaves and fruit. Most severe in areas with cool, wet springs.",
+    "treatment": [
+      "Rake and destroy all fallen leaves (primary infection source)",
+      "Apply fungicides from green tip through petal fall",
+      "Prune to improve air circulation and light penetration",
+      "Remove severely infected fruit and twigs",
+      "Continue fungicide applications through June in wet years"
+    ],
+    "prevention": [
+      "Plant scab-resistant apple varieties (Liberty, Freedom, Enterprise)",
+      "Rake and destroy fallen leaves in autumn",
+      "Maintain 20-30 foot spacing between trees",
+      "Prune trees annually to improve air flow",
+      "Apply dormant oil spray in early spring",
+      "Mulch with wood chips (not leaves)",
+      "Monitor weather for infection periods"
+    ],
+    "organic_solutions": [
+      "Sulfur-based fungicides (apply before rain)",
+      "Neem oil during growing season",
+      "Bordeaux mixture (copper + lime)",
+      "Baking soda spray (5 tbsp per gallon)",
+      "Potassium bicarbonate fungicide",
+      "Remove leaf litter to break disease cycle"
+    ],
+    "care_instructions": [
+      "Scout trees weekly during spring for first symptoms",
+      "Water at tree base, avoid wetting foliage",
+      "Apply balanced fertilizer in early spring",
+      "Thin fruit to prevent overcrowding",
+      "Maintain proper tree structure through pruning"
+    ]
+  },
+  "Pepper___Bacterial_spot": {
+    "disease_name": "Pepper Bacterial Spot",
+    "severity": "Moderate",
+    "description": "Bacterial disease causing leaf spots and fruit lesions on pepper plants. Can significantly reduce yield and fruit quality.",
+    "treatment": [
+      "Remove infected leaves and destroy them",
+      "Apply copper bactericides weekly",
+      "Avoid overhead irrigation",
+      "Increase spacing between plants if possible",
+      "Disinfect pruning tools between plants"
+    ],
+    "prevention": [
+      "Start with certified disease-free seeds",
+      "Rotate peppers with non-solanaceous crops",
+      "Use drip irrigation or soaker hoses",
+      "Avoid working in garden when plants are wet",
+      "Space plants 18-24 inches apart",
+      "Choose resistant varieties when available"
+    ],
+    "organic_solutions": [
+      "Copper-based organic bactericides",
+      "Biological controls with Bacillus species",
+      "Garlic extract spray",
+      "Remove and destroy infected plant material",
+      "Improve soil health with compost"
+    ],
+    "care_instructions": [
+      "Inspect plants regularly, especially after rain",
+      "Water early in the day at soil level",
+      "Maintain consistent soil moisture",
+      "Fertilize with balanced organic fertilizer",
+      "Mulch to prevent soil splash"
+    ]
+  }
+}
