@@ -1,5 +1,3 @@
-# main.py
-# -*- coding: utf-8 -*-
 import os
 import io
 import json
@@ -9,21 +7,36 @@ from typing import Optional, Union
 import torch
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 from torchvision import transforms
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-from models.ImageClassificationModel import CNNModel  
+from models.ImageClassificationModel import CNNModel
+from recommendation_engine import RecommendationEngine, GPTRecommendationEngine
 
 # ----------------- Configuration -----------------
 logging.basicConfig(level=logging.INFO)
 app = FastAPI(title="🌿 Plant Disease Detection API")
+
+# ----------------- CORS Middleware -----------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Paths (use os.path.join for portability)
 LABELS_IMAGE_PATH = os.path.join("models", "plant_disease_classes.json")
 LABELS_TEXT_PATH = os.path.join("models", "labels_text_model.json")
 IMAGE_MODEL_WEIGHTS = os.path.join("models", "cnn_model_weights.pth")
 TEXT_MODEL_PATH = "text_classification_model"
+KNOWLEDGE_BASE_PATH = os.path.join("models", "disease_knowledge_base.json")
 
 # ----------------- Helpers -----------------
 def load_labels(path: str) -> Optional[Union[list, dict]]:
@@ -50,6 +63,24 @@ def load_labels(path: str) -> Optional[Union[list, dict]]:
 # ----------------- Load labels -----------------
 image_class_labels = load_labels(LABELS_IMAGE_PATH)
 text_class_labels = load_labels(LABELS_TEXT_PATH)
+
+# ----------------- Initialize Recommendation Engine -----------------
+# Option 1: Use rule-based engine (no API key needed)
+recommendation_engine = RecommendationEngine(knowledge_base_path=KNOWLEDGE_BASE_PATH)
+
+# Option 2: Use GPT-based engine (uncomment and add your API key)
+# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # Set this in environment
+# if OPENAI_API_KEY:
+#     recommendation_engine = GPTRecommendationEngine(
+#         api_key=OPENAI_API_KEY,
+#         knowledge_base_path=KNOWLEDGE_BASE_PATH
+#     )
+#     logging.info("✅ GPT-based recommendation engine initialized")
+# else:
+#     recommendation_engine = RecommendationEngine(knowledge_base_path=KNOWLEDGE_BASE_PATH)
+#     logging.info("✅ Rule-based recommendation engine initialized")
+
+logging.info("✅ Recommendation engine initialized")
 
 # ----------------- Device -----------------
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -153,13 +184,35 @@ def get_label_by_index(labels: Optional[Union[list, dict]], idx: int) -> str:
         return str(idx)
 
 # ----------------- Endpoints -----------------
+@app.get("/")
+def root():
+    return {
+        "message": "🌿 Plant Disease Detection API",
+        "version": "2.0.0",
+        "features": ["Image Classification", "Text Classification", "AI Recommendations"],
+        "endpoints": {
+            "health_check": "/health-check",
+            "predict_image": "/predict/image",
+            "predict_text": "/predict/text",
+            "get_recommendation": "/recommend/{disease_class}"
+        }
+    }
+
 @app.get("/health-check")
 def health_check():
-    return {"status": "ok", "message": "API running successfully"}
+    return {
+        "status": "ok", 
+        "message": "API running successfully",
+        "models": {
+            "image_model": "loaded" if image_model is not None else "not loaded",
+            "text_model": "loaded" if text_model is not None else "not loaded",
+            "recommendation_engine": "active"
+        }
+    }
 
 @app.post("/predict/image")
-async def predict_image(file: UploadFile = File(...)):
-    """Accept an image and return predicted label, index and confidence."""
+async def predict_image(file: UploadFile = File(...), include_recommendations: bool = True):
+    """Accept an image and return predicted label, index, confidence, and recommendations."""
     if image_model is None:
         raise HTTPException(status_code=500, detail="Image model not loaded")
 
@@ -179,15 +232,29 @@ async def predict_image(file: UploadFile = File(...)):
 
     top_label = get_label_by_index(image_class_labels, top_idx)
 
-    return JSONResponse({
+    response = {
         "prediction": top_label,
         "class_index": top_idx,
         "confidence": round(top_prob, 4)
-    })
+    }
+
+    # Add recommendations if requested
+    if include_recommendations:
+        try:
+            recommendations = recommendation_engine.generate_recommendation(
+                disease_class=top_label,
+                confidence=top_prob
+            )
+            response["recommendations"] = recommendations
+        except Exception as e:
+            logging.error(f"Error generating recommendations: {e}")
+            response["recommendations"] = {"error": "Could not generate recommendations"}
+
+    return JSONResponse(response)
 
 @app.post("/predict/text")
-async def predict_text(text: str = Form(...)):
-    """Accept a text input and return predicted class label, index and confidence."""
+async def predict_text(text: str = Form(...), include_recommendations: bool = True):
+    """Accept a text input and return predicted class label, index, confidence, and recommendations."""
     if text_model is None or tokenizer is None:
         raise HTTPException(status_code=500, detail="Text model/tokenizer not loaded")
     if not text.strip():
@@ -212,11 +279,58 @@ async def predict_text(text: str = Form(...)):
 
     pred_label = get_label_by_index(text_class_labels, pred_idx)
 
-    return JSONResponse({
+    response = {
         "prediction": pred_label,
         "class_index": pred_idx,
-        "confidence": round(confidence, 4)
-    })
+        "confidence": round(confidence, 4),
+        "input_text": text
+    }
+
+    # Add recommendations if requested
+    if include_recommendations:
+        try:
+            recommendations = recommendation_engine.generate_recommendation(
+                disease_class=pred_label,
+                confidence=confidence
+            )
+            response["recommendations"] = recommendations
+        except Exception as e:
+            logging.error(f"Error generating recommendations: {e}")
+            response["recommendations"] = {"error": "Could not generate recommendations"}
+
+    return JSONResponse(response)
+
+@app.get("/recommend/{disease_class}")
+async def get_recommendation(disease_class: str, confidence: float = 0.95):
+    """
+    Get recommendations for a specific disease class
+    
+    Args:
+        disease_class: Disease class name (e.g., "Tomato___Early_blight")
+        confidence: Confidence score (default: 0.95)
+    """
+    try:
+        recommendations = recommendation_engine.generate_recommendation(
+            disease_class=disease_class,
+            confidence=confidence
+        )
+        return JSONResponse(recommendations)
+    except Exception as e:
+        logging.exception(f"Error generating recommendations: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating recommendations: {str(e)}")
+
+@app.post("/recommend/save")
+async def save_knowledge_base():
+    """Save current knowledge base to file"""
+    try:
+        recommendation_engine.save_knowledge_base(KNOWLEDGE_BASE_PATH)
+        return JSONResponse({
+            "status": "success",
+            "message": f"Knowledge base saved to {KNOWLEDGE_BASE_PATH}",
+            "entries": len(recommendation_engine.knowledge_base)
+        })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving knowledge base: {str(e)}")
 
 # ----------------- Run -----------------
-# uvicorn main:app --reload
+# uvicorn main:app --reload --host 0.0.0.0 --port 8000a
