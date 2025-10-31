@@ -214,6 +214,7 @@ For issues, questions, or feedback, please refer to the application's About sect
 ## 🙏 Acknowledgments
 
 - Plant disease dataset providers
+- Infosys Springboard Mentor: Parasurama Reddy Sir
 - Open-source community
 - Agricultural research institutions
 
