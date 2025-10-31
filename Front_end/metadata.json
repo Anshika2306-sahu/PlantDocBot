@@ -1,0 +1,7 @@
+{
+  "name": "PlantDocBot",
+  "description": "An AI-powered chatbot that allows users to upload images of plant leaves or describe symptoms via text, and receive accurate plant disease diagnosis and treatment recommendations.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

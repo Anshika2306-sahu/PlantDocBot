@@ -1,0 +1,54 @@
+{
+  "Apple Scab": {
+    "description": "A common fungal disease affecting apple and crabapple trees. It causes olive-green to brown spots on leaves, fruit, and twigs, which can lead to defoliation and blemished fruit.",
+    "treatment": "1. **Sanitation:** Rake up and destroy all fallen leaves and fruit in the autumn to reduce fungal spores.\n2. **Pruning:** Prune trees in late winter to improve air circulation, which helps leaves dry faster.\n3. **Fungicides:** Apply a fungicide containing captan, myclobutanil, or sulfur starting in early spring just as green tips appear. Follow label instructions carefully."
+  },
+  "Apple Black Rot": {
+    "description": "A fungal disease that causes 'frogeye' leaf spots (purple-bordered lesions), limb cankers, and a firm, brown-to-black rot on the fruit, often starting at the blossom end.",
+    "treatment": "1. **Pruning:** During dormancy, prune out all dead or cankered wood, cutting back to healthy tissue.\n2. **Sanitation:** Remove and destroy all mummified fruit hanging on the tree, as these are a major source of spores.\n3. **Fungicides:** Apply fungicides like myclobutanil or captan during the growing season, from bloom until harvest."
+  },
+  "Tomato Early Blight": {
+    "description": "A fungal disease caused by Alternaria solani. It's characterized by dark, concentric 'bulls-eye' shaped spots on lower leaves. Affected leaves eventually turn yellow, wither, and die.",
+    "treatment": "1. **Cultural Practices:** Use disease-resistant varieties if possible. Mulch around the base of plants to prevent soil containing spores from splashing onto leaves.\n2. **Watering:** Water at the base of the plant (e.g., with a soaker hose) to keep foliage dry.\n3. **Fungicides:** Apply fungicides containing chlorothalonil or mancozeb at the first sign of disease. Repeat every 7-10 days."
+  },
+  "Potato Late Blight": {
+    "description": "A highly destructive water mold disease that causes large, dark brown lesions on leaves and stems, often with a fuzzy white border in moist conditions. It can destroy a crop rapidly.",
+    "treatment": "1. **Prevention:** Plant only certified, disease-free seed potatoes. Ensure good air circulation and spacing between plants.\n2. **Immediate Action:** Remove and destroy infected plants and tubers immediately to prevent the disease from spreading.\n3. **Fungicides:** Apply preventative fungicides like chlorothalonil or copper-based sprays, especially during periods of cool, wet weather."
+  },
+  "Corn Common Rust": {
+    "description": "Caused by the fungus Puccinia sorghi, this disease is characterized by small, cinnamon-brown, powdery pustules on both upper and lower leaf surfaces.",
+    "treatment": "1. **Resistant Hybrids:** The most effective management is to plant corn hybrids that are resistant to common rust.\n2. **Fungicides:** Fungicide applications are usually not economical unless infections are severe and start early on susceptible hybrids."
+  },
+  "Grape Black Rot": {
+    "description": "A serious fungal disease of grapes. It causes brown circular lesions on leaves and black rot on berries, which shrivel into hard, black 'mummies'.",
+    "treatment": "1. **Sanitation:** Remove and destroy all mummified fruit and diseased canes during dormant pruning.\n2. **Canopy Management:** Practice good canopy management (e.g., leaf pulling) to improve air circulation and sunlight exposure.\n3. **Fungicides:** A rigorous fungicide spray program (using Mancozeb, Ziram, or Captan) is essential, starting early in the season."
+  },
+  "Cherry Powdery Mildew": {
+    "description": "A fungal disease that appears as a white powdery coating on leaves and fruit. It can cause leaves to curl and distort.",
+    "treatment": "1. **Pruning:** Prune for better air circulation.\n2. **Fungicides:** Apply fungicides such as sulfur, potassium bicarbonate, or myclobutanil when the first signs of mildew appear."
+  },
+  "Peach Bacterial Spot": {
+    "description": "A bacterial disease causing purple or brown spots on leaves, which may fall out leaving a 'shot hole' appearance. It also causes cracking and pitting on fruit.",
+    "treatment": "1. **Resistant Varieties:** Plant varieties with known resistance.\n2. **Sprays:** Apply copper-based bactericides during the dormant season. Sprays containing oxytetracycline can be used during the season."
+  },
+  "Pepper Bell Bacterial Spot": {
+    "description": "Causes water-soaked spots on leaves that later turn brown and necrotic. Fruit may have raised, scab-like spots.",
+    "treatment": "1. **Clean Seed:** Start with certified disease-free seed and transplants.\n2. **Sanitation:** Avoid working in the fields when plants are wet. Remove and destroy infected plants.\n3. **Sprays:** Copper-based bactericides can help slow the spread."
+  },
+  "Squash Powdery Mildew": {
+    "description": "A very common fungal disease that creates a white, powdery-looking growth on the leaves and stems of squash plants.",
+    "treatment": "1. **Air Circulation:** Provide ample space between plants.\n2. **Fungicides:** Apply horticultural oils, neem oil, sulfur, or potassium bicarbonate at the first sign of disease. Ensure thorough coverage of all leaf surfaces."
+  },
+  "Strawberry Leaf Scorch": {
+    "description": "A fungal disease causing irregular purplish blotches on leaves. The tissue between blotches can turn brown, making the leaf look 'scorched'.",
+    "treatment": "1. **Resistant Varieties:** Plant resistant strawberry varieties.\n2. **Sanitation:** After harvest, mow off old leaves and remove them to reduce inoculum.\n3. **Fungicides:** Apply protective fungicides if the disease is severe."
+  },
+  "Healthy Plant": {
+    "description": "The plant appears to be in excellent health, showing vigorous growth with no visible signs of disease, pests, or nutrient deficiencies.",
+    "treatment": "1. **Maintain Care:** Continue with your current watering schedule and feeding regimen.\n2. **Monitor:** Regularly inspect leaves (top and bottom) and stems for any early signs of trouble.\n3. **Environment:** Ensure the plant continues to receive adequate sunlight, air circulation, and space to grow."
+  },
+  "Unknown": {
+    "description": "The specific disease could not be determined from the provided information. Diagnosis can be affected by image quality, lighting, or the stage of the disease.",
+    "treatment": "1. **Provide More Info:** Try again with a clearer, well-lit photo focusing on the affected area. Multiple angles can be helpful.\n2. **Describe Symptoms:** Add more details about the symptoms. When did they start? Where on the plant are they located? Have they spread?\n3. **Check for Pests:** Carefully inspect the undersides of leaves and stems for any visible insects or webbing."
+  }
+}
