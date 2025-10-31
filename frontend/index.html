@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered plant disease detection system - Upload images or describe symptoms to identify plant diseases instantly">
+    <meta name="author" content="Vanshika">
+    <meta name="keywords" content="plant disease detection, AI, machine learning, agriculture">
+    <title>Plant Disease Detection - AI Detection System by Vanshika</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">🌿</div>
+        <div class="loading-title">Plant Disease Detection</div>
+        <div class="loading-subtitle">AI-Powered Agricultural Solution</div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Initializing AI models...</div>
+        <div class="loading-credits">
+            Developed with ❤️ by <strong>Vanshika</strong>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🌿 Plant Disease Detection System</h1>
+            <p>AI-Powered Agricultural Solution | Developed by Vanshika</p>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalPredictions">0</span>
+                    <span class="stat-label">Total Predictions</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="avgConfidence">0%</span>
+                    <span class="stat-label">Avg Confidence</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="todayCount">0</span>
+                    <span class="stat-label">Today</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="cards">
+            <!-- Image Prediction Card -->
+            <div class="card">
+                <h2><span class="card-icon">📷</span> Image Detection</h2>
+                <form id="imageForm">
+                    <div class="form-group">
+                        <label for="imageFile">Upload Plant Image:</label>
+                        <input type="file" id="imageFile" accept="image/*" required>
+                    </div>
+                    <img id="imagePreview" class="preview-image" style="display:none;">
+                    <button type="submit" class="btn" id="imageBtn">Analyze Image</button>
+                </form>
+                <div class="loading" id="imageLoading">
+                    <div class="spinner"></div>
+                    <p>Analyzing image...</p>
+                </div>
+                <div class="result" id="imageResult"></div>
+            </div>
+
+            <!-- Text Prediction Card -->
+            <div class="card">
+                <h2><span class="card-icon">📝</span> Text Description</h2>
+                <form id="textForm">
+                    <div class="form-group">
+                        <label for="textInput">Describe the symptoms:</label>
+                        <textarea id="textInput" placeholder="Example: leaves have brown spots and are wilting..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn" id="textBtn">Analyze Symptoms</button>
+                </form>
+                <div class="loading" id="textLoading">
+                    <div class="spinner"></div>
+                    <p>Analyzing symptoms...</p>
+                </div>
+                <div class="result" id="textResult"></div>
+            </div>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div id="recommendationsSection" class="links-section" style="display: none;">
+            <h2>💊 Treatment Recommendations</h2>
+            <div id="recommendationsContent"></div>
+        </div>
+
+        <!-- History Section -->
+        <div class="links-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 style="margin: 0;">📊 Prediction History</h2>
+                <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+            </div>
+            <div id="historyList" class="history-list">
+                <p style="text-align: center; color: #94a3b8; padding: 20px;">No predictions yet. Start by uploading an image or entering symptoms!</p>
+            </div>
+        </div>
+
+        <!-- Quick Links Section -->
+        <div class="links-section">
+            <h2>🔗 API Resources</h2>
+            <div class="links">
+                <a href="/docs" class="link-btn" target="_blank">📚 API Documentation</a>
+                <a href="/redoc" class="link-btn" target="_blank">📖 ReDoc</a>
+                <a href="/health-check" class="link-btn" target="_blank">❤️ Health Check</a>
+                <button class="link-btn" onclick="exportData()">💾 Export Data</button>
+                <button class="link-btn" onclick="showAbout()">ℹ️ About</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAbout()">&times;</span>
+            <h2>🌿 About This Project</h2>
+            <div class="about-content">
+                <p><strong>Plant Disease Detection System</strong> - An AI-powered solution for agricultural diagnostics</p>
+                
+                <h3>Features</h3>
+                <ul>
+                    <li>🖼️ Image-based disease detection using CNN</li>
+                    <li>📝 Text-based symptom analysis</li>
+                    <li>💊 Comprehensive treatment recommendations</li>
+                    <li>📊 Real-time statistics tracking</li>
+                    <li>💾 Offline data storage & export</li>
+                    <li>🌙 Dark mode support</li>
+                </ul>
+
+                <h3>Technology Stack</h3>
+                <ul>
+                    <li>Backend: FastAPI, Python</li>
+                    <li>ML Models: PyTorch, Transformers</li>
+                    <li>Frontend: Vanilla JavaScript, HTML5, CSS3</li>
+                    <li>Storage: Browser LocalStorage</li>
+                </ul>
+
+                <h3>Developer Information</h3>
+                <p><strong>Created by:</strong> Vanshika</p>
+                <p><strong>Version:</strong> 2.0.0</p>
+                <p><strong>Release Date:</strong> October 2025</p>
+                <p><strong>License:</strong> All Rights Reserved</p>
+
+                <h3>Model Information</h3>
+                <ul>
+                    <li><strong>Image Model:</strong> Custom CNN (38 disease classes)</li>
+                    <li><strong>Text Model:</strong> Transformer-based classifier</li>
+                    <li><strong>Dataset:</strong> New Plant Diseases Dataset (Augmented)</li>
+                    <li><strong>Accuracy:</strong> High confidence predictions</li>
+                </ul>
+
+                <div style="margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #10b981;">
+                    <strong>Note:</strong> This system is designed for educational and research purposes. 
+                    For critical agricultural decisions, please consult with certified plant pathologists.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
