@@ -1,0 +1,24 @@
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# Node modules
+frontend/node_modules/
+
+# Cache files
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# Build outputs
+frontend/dist/
+frontend/build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
