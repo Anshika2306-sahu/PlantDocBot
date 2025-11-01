@@ -1,24 +1,41 @@
-# Python virtual environment
-venv/
-.venv/
-env/
+# 🧠 Ignore model and large data files
+*.pth
+*.pt
+*.bin
+*.h5
+*.ckpt
+*.zip
+*.tar
+*.tar.gz
+*.npy
+*.npz
 
-# Node modules
-frontend/node_modules/
-
-# Cache files
+# 🚫 Ignore Python cache and virtual environments
 __pycache__/
 *.pyc
 *.pyo
-.ipynb_checkpoints/
+*.pyd
+venv/
+.venv/
+env/
+.env/
 
-# Build outputs
-frontend/dist/
-frontend/build/
+# 🧰 Ignore build and node modules
+node_modules/
+dist/
+build/
 
-# OS files
+# 🌿 Ignore IDE and system files
 .DS_Store
 Thumbs.db
-
-# VSCode
 .vscode/
+.idea/
+
+# 📦 Ignore log and temporary files
+*.log
+*.tmp
+*.bak
+
+# 🧩 Ignore datasets
+dataset/
+data/
