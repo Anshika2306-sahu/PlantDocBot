@@ -1,0 +1,27 @@
+src/
+ └── components/
+      └── plantdoc/
+          ├── App.jsx                // main page
+          ├── icons/
+          │    ├── Activity.jsx
+          │    ├── Alert.jsx
+          │    ├── Check.jsx
+          │    ├── Leaf.jsx
+          │    └── index.js
+          ├── charts/
+          │    ├── DonutChart.jsx
+          │    ├── MiniBarChart.jsx
+          │    └── StatBar.jsx
+          ├── data/
+          │    └── diseaseDatabase.js
+          ├── api/
+          │    └── config.js
+          ├── sections/
+          │    ├── Header.jsx
+          │    ├── ImageUploadSection.jsx
+          │    ├── TextAnalysisSection.jsx
+          │    ├── PredictionResult.jsx
+          │    ├── AnalyticsPanel.jsx
+          │    └── HistoryPanel.jsx
+          └── utils/
+               └── sanitizeKey.js
