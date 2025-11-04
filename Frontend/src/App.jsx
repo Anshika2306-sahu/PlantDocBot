@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 /* ======================
    Inline SVG Icon components
-   (kept lightweight)
    ====================== */
 const IconProps = {
   stroke: "currentColor",
@@ -25,6 +24,12 @@ const Alert = ({ className }) => (
 const Activity = ({ className }) => (
   <svg {...IconProps} className={className}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
 );
+const AlertTriangle = ({ className }) => (
+  <svg {...IconProps} className={className}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+);
+const Info = ({ className }) => (
+  <svg {...IconProps} className={className}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+);
 
 /* ======================
    Config / Endpoints
@@ -32,50 +37,6 @@ const Activity = ({ className }) => (
 const API_BASE = "http://127.0.0.1:8000";
 const IMAGE_ENDPOINT = `${API_BASE}/predict`;
 const TEXT_ENDPOINT = `${API_BASE}/predict_text`;
-
-/* ======================
-   Demo disease DB (expandable)
-   ====================== */
-const diseaseDatabase = {
-  pepper_bacterial_spot: {
-    display: "Pepper — Bacterial spot",
-    recommendations: [
-      { text: "Remove and destroy infected tissue.", tone: "high" },
-      { text: "Apply copper-based bactericides every 7–10 days.", tone: "medium" },
-      { text: "Avoid overhead watering; use drip irrigation.", tone: "low" },
-    ],
-    stats: { occurrence: 34, severity: 8.2, recovery: 65, region: "High" },
-    color: "bg-red-500",
-  },
-  tomato_early_blight: {
-    display: "Tomato — Early blight",
-    recommendations: [
-      { text: "Remove infected lower leaves and debris.", tone: "medium" },
-      { text: "Apply appropriate fungicide at first signs.", tone: "high" },
-      { text: "Practice crop rotation and mulch.", tone: "low" },
-    ],
-    stats: { occurrence: 42, severity: 6.8, recovery: 75, region: "Moderate" },
-    color: "bg-orange-500",
-  },
-  potato_late_blight: {
-    display: "Potato — Late blight",
-    recommendations: [
-      { text: "Use certified disease-free seed potatoes.", tone: "high" },
-      { text: "Destroy infected plants immediately.", tone: "high" },
-    ],
-    stats: { occurrence: 28, severity: 9.1, recovery: 45, region: "High" },
-    color: "bg-red-600",
-  },
-  "corn_(maize)___common_rust": {
-    display: "Corn — Common rust",
-    recommendations: [
-      { text: "Remove infected debris after harvest.", tone: "medium" },
-      { text: "Plant resistant varieties where available.", tone: "low" },
-    ],
-    stats: { occurrence: 60, severity: 5.5, recovery: 80, region: "Moderate" },
-    color: "bg-yellow-500",
-  },
-};
 
 /* ======================
    Small reusable UI pieces
@@ -97,11 +58,8 @@ function StatBar({ label, value, max = 100 }) {
 
 /* ======================
    Charts (SVG, no external libs)
-   - Mini Bar Chart (top N)
-   - Donut Chart (distribution)
    ====================== */
 function MiniBarChart({ data = [] }) {
-  // data: [{label, value}]
   const max = Math.max(...data.map(d => d.value), 1);
   const barWidth = 18;
   const gap = 10;
@@ -161,23 +119,63 @@ function DonutChart({ data = [], size = 90, strokeWidth = 18 }) {
 }
 
 /* ======================
+   Recommendation Card Component
+   ====================== */
+function RecommendationCard({ recommendation, index }) {
+  const toneConfig = {
+    high: { 
+      bg: "bg-red-600/20", 
+      icon: <AlertTriangle className="w-5 h-5 text-red-400" />,
+      border: "border-red-500/30"
+    },
+    medium: { 
+      bg: "bg-yellow-500/10", 
+      icon: <Info className="w-5 h-5 text-yellow-400" />,
+      border: "border-yellow-500/30"
+    },
+    low: { 
+      bg: "bg-emerald-500/10", 
+      icon: <Check className="w-5 h-5 text-emerald-400" />,
+      border: "border-emerald-500/30"
+    }
+  };
+
+  const config = toneConfig[recommendation.tone] || toneConfig.low;
+
+  return (
+    <div className={`${config.bg} p-3 rounded-lg flex items-start gap-3 border ${config.border} transition-all hover:scale-[1.02]`}>
+      <div className="flex-shrink-0 p-2 rounded-md bg-slate-900/40">
+        {config.icon}
+      </div>
+      <div className="flex-1">
+        <div className="text-sm text-gray-200">{recommendation.text}</div>
+        <div className="text-xs text-gray-400 mt-1">
+          Priority: {recommendation.priority} • {recommendation.tone === "high" ? "Critical" : recommendation.tone === "medium" ? "Important" : "Suggested"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ======================
    Main Component
    ====================== */
 export default function App() {
-  const [mode, setMode] = useState("image"); // image or text
+  const [mode, setMode] = useState("image");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [textInput, setTextInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState(null);
-  const [prediction, setPrediction] = useState(null); // {class, confidence, diseaseKey}
+  const [prediction, setPrediction] = useState(null);
   const [history, setHistory] = useState([]);
 
-  // Load history from localStorage
+  // Load history from localStorage (in-memory storage as per restrictions)
   useEffect(() => {
     const saved = localStorage.getItem("plantdoc_history_v2");
     if (saved) setHistory(JSON.parse(saved));
   }, []);
+  
   useEffect(() => {
     localStorage.setItem("plantdoc_history_v2", JSON.stringify(history.slice(0, 50)));
   }, [history]);
@@ -212,12 +210,14 @@ export default function App() {
         throw new Error(detail);
       }
       const data = await resp.json();
-      // data: { class: displayName, confidence: pctNumber, diseaseKey }
       const item = {
         source: "image",
         class: data.class || "Unknown",
         confidence: Number(data.confidence || 0),
-        diseaseKey: data.diseaseKey || sanitizeKey(data.class || data.disease || "unknown"),
+        diseaseKey: data.diseaseKey || sanitizeKey(data.class || "unknown"),
+        recommendations: data.recommendations || [],
+        stats: data.stats || {},
+        displayName: data.displayName || data.class,
         time: new Date().toISOString(),
         raw: data,
       };
@@ -248,6 +248,9 @@ export default function App() {
         class: data.class || "Unknown",
         confidence: Number(data.confidence || 0),
         diseaseKey: data.diseaseKey || sanitizeKey(data.class || "unknown"),
+        recommendations: data.recommendations || [],
+        stats: data.stats || {},
+        displayName: data.displayName || data.class,
         time: new Date().toISOString(),
         raw: data,
       };
@@ -265,7 +268,7 @@ export default function App() {
     setImageFile(null); setImagePreview(null); setPrediction(null); setTextInput(""); setApiError(null);
   };
 
-  // Statistics derived from history
+  // Statistics
   const totalPredictions = history.length;
   const counts = history.reduce((acc, h) => {
     const k = h.diseaseKey || sanitizeKey(h.class || "unknown");
@@ -275,9 +278,6 @@ export default function App() {
   const topDiseases = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => ({ label: k.split("_").slice(0,3).join(" "), value: v }));
   const avgConfidence = history.length ? (history.reduce((s, h) => s + (h.confidence||0), 0) / history.length) : 0;
   const donutData = Object.entries(counts).slice(0, 4).map(([k, v], i) => ({ label: k, value: v, color: ["#34d399", "#60a5fa", "#f59e0b", "#f87171"][i % 4] }));
-
-  // Pretty display for prediction result
-  const displayInfo = prediction ? (diseaseDatabase[prediction.diseaseKey] || diseaseDatabase[sanitizeKey(prediction.class)] || null) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 text-white">
@@ -290,7 +290,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">PlantDoc — AI Plant Disease Classifier</h1>
-              <p className="text-xs text-gray-400">Image & text modes • Backend: <span className="font-mono">127.0.0.1:8000</span></p>
+              <p className="text-xs text-gray-400">Real-time recommendations • Backend: <span className="font-mono">127.0.0.1:8000</span></p>
             </div>
           </div>
 
@@ -304,100 +304,57 @@ export default function App() {
         </header>
 
         <main className="grid lg:grid-cols-3 gap-6">
-          {/* Left/center (forms + result) */}
+          {/* Left/center */}
           <section className="lg:col-span-2 space-y-6">
-            {/* Image / Text box */}
+            {/* Image upload */}
             <div className="bg-slate-800/40 rounded-2xl p-6 border border-slate-700/50">
-              <div className="flex gap-6">
-                {/* large preview area */}
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold mb-3">Image Analysis</h2>
-                  <div className="rounded-xl overflow-hidden border-2 border-dashed border-slate-700 bg-slate-900/40 h-64 flex items-center justify-center">
-                    {imagePreview ? (
-                      <img src={imagePreview} alt="preview" className="object-cover w-full h-full" />
-                    ) : (
-                      <div className="text-center text-gray-400 p-6">
-                        <Activity className="w-16 h-16 mx-auto mb-2 opacity-60" />
-                        <div>Upload plant image (PNG, JPG)</div>
-                        <div className="text-xs text-gray-500 mt-1">Try to crop close to the diseased leaf for best results</div>
-                      </div>
-                    )}
+              <h2 className="text-lg font-bold mb-3">Image Analysis</h2>
+              <div className="rounded-xl overflow-hidden border-2 border-dashed border-slate-700 bg-slate-900/40 h-64 flex items-center justify-center">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="preview" className="object-cover w-full h-full" />
+                ) : (
+                  <div className="text-center text-gray-400 p-6">
+                    <Activity className="w-16 h-16 mx-auto mb-2 opacity-60" />
+                    <div>Upload plant image (PNG, JPG)</div>
+                    <div className="text-xs text-gray-500 mt-1">Crop close to diseased leaf for best results</div>
                   </div>
-
-                  <div className="mt-3 flex items-center gap-3">
-                    <label className="cursor-pointer">
-                      <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                      <div className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold">Choose image</div>
-                    </label>
-
-                    <button onClick={handleImagePredict} disabled={!imageFile || loading} className="px-4 py-2 rounded-lg bg-blue-600 disabled:bg-slate-600 text-white font-bold">
-                      {loading && prediction?.source === "image" ? "Analyzing..." : "Get Prediction"}
-                    </button>
-
-                    <button onClick={clearAll} className="px-3 py-2 rounded-lg bg-slate-700 text-gray-300">Clear</button>
-                  </div>
-
-                  {apiError && <div className="mt-3 text-sm text-red-400 bg-red-500/10 p-3 rounded-md flex items-center gap-2"><Alert className="w-4 h-4" />{apiError}</div>}
-                </div>
-
-                {/* Recommendations + statistics (right inside this card) */}
-                <div className="w-80 pl-3">
-                  <h3 className="text-sm text-gray-300 mb-2">Recommendations</h3>
-
-                  {/* If we have a recent prediction, show tailored recommendations */}
-                  {displayInfo ? (
-                    <div className="space-y-3">
-                      {displayInfo.recommendations.map((r, i) => (
-                        <div key={i} className="bg-slate-900/30 p-3 rounded-lg flex items-start gap-3">
-                          <div className={`p-2 rounded-md ${r.tone === "high" ? "bg-red-600/20" : r.tone === "medium" ? "bg-yellow-500/10" : "bg-emerald-500/10"}`}>
-                            <Check className="w-5 h-5 text-white" />
-                          </div>
-                          <div className="text-sm text-gray-200">{r.text}</div>
-                        </div>
-                      ))}
-                      <div className="mt-2 text-xs text-gray-400">Tailored suggestions based on the detected disease.</div>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className="text-sm text-gray-300 mb-2">General suggestions</div>
-                      <div className="text-sm text-gray-200">• Keep leaves dry and avoid overhead watering.</div>
-                      <div className="text-sm text-gray-200">• Improve air circulation and remove infected material.</div>
-                      <div className="text-sm text-gray-200">• Use recommended fungicides/bactericides when necessary.</div>
-                    </div>
-                  )}
-
-                  {/* Compact Stats */}
-                  <div className="mt-5">
-                    <div className="text-sm text-gray-300 mb-3">Quick Statistics</div>
-                    <div className="p-3 bg-slate-900/30 rounded-lg space-y-3">
-                      <div className="text-sm text-gray-300">Total analyses</div>
-                      <div className="text-2xl font-bold">{totalPredictions}</div>
-                      <div className="text-sm text-gray-400">Average confidence</div>
-                      <div className="text-lg font-semibold">{Math.round(avgConfidence)}%</div>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
+
+              <div className="mt-3 flex items-center gap-3">
+                <label className="cursor-pointer">
+                  <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                  <div className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-semibold">Choose image</div>
+                </label>
+
+                <button onClick={handleImagePredict} disabled={!imageFile || loading} className="px-4 py-2 rounded-lg bg-blue-600 disabled:bg-slate-600 text-white font-bold">
+                  {loading && mode === "image" ? "Analyzing..." : "Get Prediction"}
+                </button>
+
+                <button onClick={clearAll} className="px-3 py-2 rounded-lg bg-slate-700 text-gray-300">Clear</button>
+              </div>
+
+              {apiError && <div className="mt-3 text-sm text-red-400 bg-red-500/10 p-3 rounded-md flex items-center gap-2"><Alert className="w-4 h-4" />{apiError}</div>}
             </div>
 
             {/* Text mode */}
             {mode === "text" && (
               <div className="bg-slate-800/40 rounded-2xl p-6 border border-slate-700/50">
                 <h2 className="text-lg font-bold mb-3">Text Symptom Analysis</h2>
-                <textarea value={textInput} onChange={(e) => setTextInput(e.target.value)} placeholder="Symptoms: yellowing, brown spots, wilting..." className="w-full h-36 p-4 rounded-xl bg-slate-900/40 border border-slate-700/50 text-white placeholder-gray-500" />
+                <textarea value={textInput} onChange={(e) => setTextInput(e.target.value)} placeholder="Describe symptoms: yellowing leaves, brown spots, wilting..." className="w-full h-36 p-4 rounded-xl bg-slate-900/40 border border-slate-700/50 text-white placeholder-gray-500" />
                 <div className="mt-3 flex gap-3">
-                  <button onClick={handleTextPredict} disabled={loading} className="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold">{loading && prediction?.source === "text" ? "Analyzing..." : "Analyze Symptoms"}</button>
+                  <button onClick={handleTextPredict} disabled={loading} className="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold">{loading && mode === "text" ? "Analyzing..." : "Analyze Symptoms"}</button>
                   <button onClick={() => { setTextInput(""); setPrediction(null); setApiError(null); }} className="px-3 py-2 rounded-lg bg-slate-700 text-gray-300">Clear</button>
                 </div>
               </div>
             )}
 
-            {/* Result Card */}
+            {/* Result Card with Recommendations */}
             {prediction && (
               <div className="bg-slate-800/40 rounded-2xl p-6 border border-slate-700/50">
-                <div className="flex items-start justify-between gap-6">
+                <div className="flex items-start justify-between gap-6 mb-6">
                   <div>
-                    <div className="text-sm text-gray-300">Detected</div>
+                    <div className="text-sm text-gray-300">Detected Disease</div>
                     <h3 className="text-2xl font-bold">{prediction.class}</h3>
                     <div className="text-xs text-gray-400 mt-1">Source: <span className="font-mono">{prediction.source}</span></div>
                   </div>
@@ -405,62 +362,93 @@ export default function App() {
                   <div className="text-right">
                     <div className="text-sm text-gray-300">Confidence</div>
                     <div className="text-4xl font-bold">{Math.round(prediction.confidence)}%</div>
-                    <div className="mt-2 text-xs text-gray-400">Measured confidence from model</div>
                   </div>
                 </div>
 
-                {/* Visual gauge bar */}
-                <div className="mt-6">
+                {/* Confidence bar */}
+                <div className="mb-6">
                   <div className="w-full bg-slate-900 h-4 rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-emerald-400 to-green-500" style={{ width: `${Math.max(2, Math.min(100, prediction.confidence))}%` }} />
                   </div>
                 </div>
 
-                {/* Action buttons */}
-                <div className="mt-4 flex gap-3">
-                  <button onClick={() => navigator.clipboard?.writeText(JSON.stringify(prediction.raw || prediction, null, 2))} className="px-3 py-2 bg-slate-700 rounded text-sm">Copy result</button>
-                  <button onClick={() => window.open(`https://www.google.com/search?q=${encodeURIComponent(prediction.class)}`, "_blank")} className="px-3 py-2 bg-emerald-500 rounded text-sm">Search more</button>
-                  <button onClick={() => { /* placeholder for save/export */ }} className="px-3 py-2 bg-blue-600 rounded text-sm">Save</button>
+                {/* Real-time Recommendations */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <h4 className="text-lg font-bold">Treatment Recommendations</h4>
+                    <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full">Real-time</span>
+                  </div>
+                  
+                  {prediction.recommendations && prediction.recommendations.length > 0 ? (
+                    <div className="space-y-3">
+                      {prediction.recommendations.map((rec, i) => (
+                        <RecommendationCard key={i} recommendation={rec} index={i} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-400 bg-slate-900/30 p-4 rounded-lg">
+                      No specific recommendations available for this disease. Please consult with agricultural experts.
+                    </div>
+                  )}
                 </div>
 
-                {/* If we have curated card for disease show key stats */}
-                {displayInfo ? (
-                  <div className="mt-6 grid md:grid-cols-3 gap-4">
-                    <div className="p-3 bg-slate-900/30 rounded">
-                      <div className="text-xs text-gray-400">Severity</div>
-                      <div className="text-lg font-bold">{displayInfo.stats.severity}/10</div>
-                      <StatBar label="Severity" value={displayInfo.stats.severity} max={displayInfo.stats.severity.max || 10} />
-                    </div>
-                    <div className="p-3 bg-slate-900/30 rounded">
-                      <div className="text-xs text-gray-400">Recovery rate</div>
-                      <div className="text-lg font-bold">{displayInfo.stats.recovery}%</div>
-                      <StatBar label="Recovery" value={displayInfo.stats.recovery} max={100} />
-                    </div>
-                    <div className="p-3 bg-slate-900/30 rounded">
-                      <div className="text-xs text-gray-400">Occurrence</div>
-                      <div className="text-lg font-bold">{displayInfo.stats.occurrence}%</div>
-                      <StatBar label="Occurrence" value={displayInfo.stats.occurrence} max={100} />
+                {/* Statistics */}
+                {prediction.stats && Object.keys(prediction.stats).length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-sm font-bold mb-3 text-gray-300">Disease Statistics</h4>
+                    <div className="grid md:grid-cols-4 gap-4">
+                      {prediction.stats.severity > 0 && (
+                        <div className="p-3 bg-slate-900/30 rounded">
+                          <div className="text-xs text-gray-400">Severity</div>
+                          <div className="text-lg font-bold">{prediction.stats.severity}/10</div>
+                          <StatBar label="" value={prediction.stats.severity} max={10} />
+                        </div>
+                      )}
+                      {prediction.stats.recovery > 0 && (
+                        <div className="p-3 bg-slate-900/30 rounded">
+                          <div className="text-xs text-gray-400">Recovery Rate</div>
+                          <div className="text-lg font-bold">{prediction.stats.recovery}%</div>
+                          <StatBar label="" value={prediction.stats.recovery} max={100} />
+                        </div>
+                      )}
+                      {prediction.stats.occurrence > 0 && (
+                        <div className="p-3 bg-slate-900/30 rounded">
+                          <div className="text-xs text-gray-400">Occurrence</div>
+                          <div className="text-lg font-bold">{prediction.stats.occurrence}%</div>
+                          <StatBar label="" value={prediction.stats.occurrence} max={100} />
+                        </div>
+                      )}
+                      {prediction.stats.region && (
+                        <div className="p-3 bg-slate-900/30 rounded">
+                          <div className="text-xs text-gray-400">Risk Level</div>
+                          <div className="text-lg font-bold">{prediction.stats.region}</div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                ) : (
-                  <div className="mt-4 text-xs text-gray-400">No curated statistics for this class. Add it to the internal DB to show tailored stats.</div>
                 )}
 
-                <div className="mt-4 text-xs text-gray-400">Raw server response:</div>
-                <pre className="mt-2 p-3 bg-slate-900/30 rounded text-xs overflow-auto">{JSON.stringify(prediction.raw || {}, null, 2)}</pre>
+                {/* Action buttons */}
+                <div className="flex gap-3">
+                  <button onClick={() => navigator.clipboard?.writeText(JSON.stringify(prediction.raw || prediction, null, 2))} className="px-3 py-2 bg-slate-700 rounded text-sm">Copy JSON</button>
+                  <button onClick={() => window.open(`https://www.google.com/search?q=${encodeURIComponent(prediction.class + " plant disease treatment")}`, "_blank")} className="px-3 py-2 bg-emerald-500 rounded text-sm">Search More</button>
+                </div>
               </div>
             )}
           </section>
 
-          {/* Right column: overall stats + history */}
+          {/* Right sidebar */}
           <aside className="space-y-6">
             <div className="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50">
               <div className="flex justify-between items-center">
                 <div>
-                  <div className="text-sm text-gray-300">Server Health</div>
-                  <div className="text-xs text-gray-400">Local FastAPI • Ensure uvicorn main:app</div>
+                  <div className="text-sm text-gray-300">Server Status</div>
+                  <div className="text-xs text-gray-400">FastAPI Backend</div>
                 </div>
-                <div className="text-xs text-gray-400">Online</div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <div className="text-xs text-green-400">Online</div>
+                </div>
               </div>
             </div>
 
@@ -472,12 +460,12 @@ export default function App() {
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="text-xs text-gray-300">Total</div>
+                  <div className="text-xs text-gray-300">Total Predictions</div>
                   <div className="font-semibold">{totalPredictions}</div>
                 </div>
                 <div className="flex items-center justify-between">
-                  <div className="text-xs text-gray-300">Top confidence</div>
-                  <div className="font-semibold">{history.length ? `${Math.round(Math.max(...history.map(h => h.confidence || 0)))}%` : "—"}</div>
+                  <div className="text-xs text-gray-300">Avg Confidence</div>
+                  <div className="font-semibold">{Math.round(avgConfidence)}%</div>
                 </div>
 
                 <div className="mt-2">
@@ -487,8 +475,8 @@ export default function App() {
                 <div className="mt-4 flex items-center gap-3">
                   <DonutChart data={donutData.length ? donutData : [{label: "none", value: 1, color: "#34d399"}]} size={80} strokeWidth={14} />
                   <div className="text-xs text-gray-300">
-                    <div className="font-semibold">{history.length ? `${Math.round(avgConfidence)}%` : "—"}</div>
-                    <div className="text-gray-400">Avg confidence</div>
+                    <div className="font-semibold">Distribution</div>
+                    <div className="text-gray-400">Top diseases</div>
                   </div>
                 </div>
               </div>
@@ -496,19 +484,19 @@ export default function App() {
 
             <div className="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm text-gray-300">Recent Predictions</div>
-                <div className="text-xs text-gray-400"> ({history.length})</div>
+                <div className="text-sm text-gray-300">Recent History</div>
+                <div className="text-xs text-gray-400">({history.length})</div>
               </div>
 
-              <div className="max-h-56 overflow-auto space-y-2">
+              <div className="max-h-64 overflow-auto space-y-2">
                 {history.length === 0 && <div className="text-xs text-gray-500">No predictions yet</div>}
-                {history.map((h, i) => (
+                {history.slice(0, 10).map((h, i) => (
                   <div key={i} className="flex items-center justify-between text-xs bg-slate-900/30 p-2 rounded-md">
-                    <div>
-                      <div className="font-medium">{h.class}</div>
+                    <div className="flex-1">
+                      <div className="font-medium truncate">{h.class}</div>
                       <div className="text-gray-400">{new Date(h.time).toLocaleString()}</div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right ml-2">
                       <div className="font-semibold">{Math.round(h.confidence)}%</div>
                       <div className="text-gray-400">{h.source}</div>
                     </div>
@@ -518,12 +506,8 @@ export default function App() {
 
               <div className="mt-3 flex gap-2">
                 <button onClick={() => { setHistory([]); localStorage.removeItem("plantdoc_history_v2"); }} className="text-xs px-2 py-1 bg-slate-700 rounded">Clear</button>
-                <button onClick={() => navigator.clipboard?.writeText(JSON.stringify(history.slice(0, 10), null, 2))} className="text-xs px-2 py-1 bg-slate-700 rounded">Copy (top 10)</button>
+                <button onClick={() => navigator.clipboard?.writeText(JSON.stringify(history.slice(0, 10), null, 2))} className="text-xs px-2 py-1 bg-slate-700 rounded">Export</button>
               </div>
-            </div>
-
-            <div className="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 text-xs text-gray-400">
-              This demo uses local prediction history to show compact statistics. Add curated classes to the internal DB for richer results.
             </div>
           </aside>
         </main>
