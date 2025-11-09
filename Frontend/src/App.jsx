@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 /* ======================
-   Inline SVG Icon components
-   ====================== */
+    Inline SVG Icon components
+    ====================== */
 const IconProps = {
   stroke: "currentColor",
   fill: "none",
@@ -32,15 +32,15 @@ const Info = ({ className }) => (
 );
 
 /* ======================
-   Config / Endpoints
-   ====================== */
+    Config / Endpoints
+    ====================== */
 const API_BASE = "http://127.0.0.1:8000";
 const IMAGE_ENDPOINT = `${API_BASE}/predict`;
 const TEXT_ENDPOINT = `${API_BASE}/predict_text`;
 
 /* ======================
-   Small reusable UI pieces
-   ====================== */
+    Small reusable UI pieces
+    ====================== */
 function StatBar({ label, value, max = 100 }) {
   const pct = Math.max(0, Math.min(100, (value / max) * 100));
   return (
@@ -57,8 +57,8 @@ function StatBar({ label, value, max = 100 }) {
 }
 
 /* ======================
-   Charts (SVG, no external libs)
-   ====================== */
+    Charts (SVG, no external libs)
+    ====================== */
 function MiniBarChart({ data = [] }) {
   const max = Math.max(...data.map(d => d.value), 1);
   const barWidth = 18;
@@ -119,8 +119,8 @@ function DonutChart({ data = [], size = 90, strokeWidth = 18 }) {
 }
 
 /* ======================
-   Recommendation Card Component
-   ====================== */
+    Recommendation Card Component
+    ====================== */
 function RecommendationCard({ recommendation, index }) {
   const toneConfig = {
     high: { 
@@ -158,8 +158,8 @@ function RecommendationCard({ recommendation, index }) {
 }
 
 /* ======================
-   Main Component
-   ====================== */
+    Main Component
+    ====================== */
 export default function App() {
   const [mode, setMode] = useState("image");
   const [imageFile, setImageFile] = useState(null);
